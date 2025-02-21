@@ -37,7 +37,7 @@ def sacar(*, saldo, valor, extrato, limite, numero_saques, limite_saques):
         messagebox.showinfo("Sucesso", f"Saque de R$ {valor:.2f} realizado!")
     else:
         messagebox.showerror("Erro", "O valor informado é inválido.")
-    return saldo, extrato
+    return saldo, extrato, numero_saques
 
 def exibir_extrato(saldo, /, *, extrato):
     extrato_texto = extrato if extrato else "Não foram realizadas movimentações."
@@ -82,6 +82,7 @@ def listar_contas():
         messagebox.showinfo("Contas", lista)
 
 def abrir_tela_principal():
+    global saldo, extrato, numero_saques
     tela_principal = tk.Toplevel(root)
     tela_principal.title("Sistema Bancário - Operações")
 
@@ -93,11 +94,21 @@ def abrir_tela_principal():
     entry_valor = tk.Entry(frame_principal)
     entry_valor.pack()
 
-    tk.Button(frame_principal, text="Depositar", command=lambda: depositar(saldo, float(entry_valor.get()), extrato)).pack(fill='x')
-    tk.Button(frame_principal, text="Sacar", command=lambda: sacar(saldo=saldo, valor=float(entry_valor.get()), extrato=extrato, limite=limite, numero_saques=numero_saques, limite_saques=LIMITE_SAQUES)).pack(fill='x')
+    tk.Button(frame_principal, text="Depositar", command=lambda: atualizar_saldo_depositar()).pack(fill='x')
+    tk.Button(frame_principal, text="Sacar", command=lambda: atualizar_saldo_sacar()).pack(fill='x')
     tk.Button(frame_principal, text="Exibir Extrato", command=lambda: exibir_extrato(saldo, extrato=extrato)).pack(fill='x')
     tk.Button(frame_principal, text="Listar Contas", command=listar_contas).pack(fill='x')
     tk.Button(frame_principal, text="Sair", command=tela_principal.destroy).pack(fill='x')
+
+def atualizar_saldo_depositar():
+    global saldo, extrato
+    valor = float(entry_valor.get())
+    saldo, extrato = depositar(saldo, valor, extrato)
+
+def atualizar_saldo_sacar():
+    global saldo, extrato, numero_saques
+    valor = float(entry_valor.get())
+    saldo, extrato, numero_saques = sacar(saldo=saldo, valor=valor, extrato=extrato, limite=limite, numero_saques=numero_saques, limite_saques=LIMITE_SAQUES)
 
 root = tk.Tk()
 root.title("Sistema Bancário - Cadastro")
